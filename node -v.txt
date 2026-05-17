@@ -1,0 +1,10 @@
+node -v
+npm -v
+Ctrl + 'node -v
+s
+PS C:\Users\Usuario>PS C:\Users\Usuario>
+PS C:\Users\Usuario>Set-ExecutionPolicy RemoteSigned -Scope CurrentUserS
+s
+npm -v
+y
+cd tava-byte
