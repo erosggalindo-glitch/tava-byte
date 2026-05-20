@@ -44,9 +44,12 @@ export default function TavaByte() {
   WhatsApp • (75) 99894-2040
 </a>
 
-            <a className="rounded-2xl border border-zinc-300 px-8 py-4 font-bold text-zinc-800 hover:border-yellow-400">
-              Ver serviços
-            </a>
+            <a
+  href="#servicos"
+  className="rounded-2xl border border-zinc-300 px-8 py-4 font-bold text-zinc-800 hover:border-yellow-400"
+>
+  Ver serviços
+</a>
           </div>
         </div>
       </section>
@@ -72,7 +75,7 @@ export default function TavaByte() {
         </div>
       </section>
 
-      <section className="border-y border-zinc-200 bg-zinc-50">
+      <section id="servicos" className="border-y border-zinc-200 bg-zinc-50">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <h2 className="text-4xl font-black">Serviços especializados</h2>
           <p className="mt-4 text-lg text-zinc-700">
