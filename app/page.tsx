@@ -35,9 +35,14 @@ export default function TavaByte() {
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4">
-            <a className="rounded-2xl bg-yellow-400 px-8 py-4 text-lg font-black text-black shadow-lg shadow-yellow-400/30">
-              WhatsApp • (75) 99894-2040
-            </a>
+            <a
+  href="https://wa.me/5575998942040"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="rounded-2xl bg-yellow-400 px-8 py-4 text-lg font-black text-black shadow-lg shadow-yellow-400/30"
+>
+  WhatsApp • (75) 99894-2040
+</a>
 
             <a className="rounded-2xl border border-zinc-300 px-8 py-4 font-bold text-zinc-800 hover:border-yellow-400">
               Ver serviços
