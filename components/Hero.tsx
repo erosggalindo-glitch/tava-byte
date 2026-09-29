@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 
 const terminal = [
-  { delay: 1200, type: "cmd", text: "iniciar diagnóstico --completo" },
-  { delay: 1800, type: "info", text: "→ analisando temperatura da CPU..." },
-  { delay: 2400, type: "warn", text: "⚠ CPU 94°C — pasta térmica degradada" },
-  { delay: 3000, type: "info", text: "→ verificando memória RAM..." },
-  { delay: 3600, type: "ok", text: "✓ RAM estável — XMP desabilitado" },
-  { delay: 4200, type: "info", text: "→ checando drivers de GPU..." },
-  { delay: 4800, type: "warn", text: "⚠ driver desatualizado — v3.1 → 4.0" },
-  { delay: 5400, type: "ok", text: "✓ diagnóstico concluído" },
+  { delay: 400, type: "cmd", text: "iniciar diagnóstico --completo" },
+  { delay: 1100, type: "info", text: "→ analisando temperatura da CPU..." },
+  { delay: 1800, type: "warn", text: "⚠ CPU 94°C — pasta térmica degradada" },
+  { delay: 2500, type: "info", text: "→ verificando memória RAM..." },
+  { delay: 3200, type: "ok", text: "✓ RAM estável — XMP desabilitado" },
+  { delay: 3900, type: "info", text: "→ checando drivers de GPU..." },
+  { delay: 4600, type: "warn", text: "⚠ driver desatualizado — v3.1 → 4.0" },
+  { delay: 5300, type: "ok", text: "✓ diagnóstico concluído" },
 ];
 
 const whatsappUrl =
@@ -18,17 +18,58 @@ const whatsappUrl =
 
 export default function Hero() {
   const [visible, setVisible] = useState<number[]>([]);
+  const [typedLines, setTypedLines] = useState<string[]>(() =>
+    terminal.map(() => ""),
+  );
+  const [animationRun, setAnimationRun] = useState(0);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion && animationRun === 0) {
+      const revealAll = window.setTimeout(() => {
+        setVisible(terminal.map((_, index) => index));
+        setTypedLines(terminal.map((line) => line.text));
+      }, 0);
+
+      return () => window.clearTimeout(revealAll);
+    }
+
+    const intervals: number[] = [];
+    const reset = window.setTimeout(() => {
+      setVisible([]);
+      setTypedLines(terminal.map(() => ""));
+    }, 0);
     const timers = terminal.map((line, index) =>
-      window.setTimeout(
-        () => setVisible((current) => [...current, index]),
-        line.delay,
-      ),
+      window.setTimeout(() => {
+        setVisible((current) => [...current, index]);
+
+        let character = 0;
+        const interval = window.setInterval(() => {
+          character += 1;
+          setTypedLines((current) => {
+            const next = [...current];
+            next[index] = line.text.slice(0, character);
+            return next;
+          });
+
+          if (character >= line.text.length) {
+            window.clearInterval(interval);
+          }
+        }, 22);
+
+        intervals.push(interval);
+      }, line.delay),
     );
 
-    return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, []);
+    return () => {
+      window.clearTimeout(reset);
+      timers.forEach((timer) => window.clearTimeout(timer));
+      intervals.forEach((interval) => window.clearInterval(interval));
+    };
+  }, [animationRun]);
 
   const color = (type: string) => {
     if (type === "warn") return "text-yellow-400";
@@ -116,6 +157,14 @@ export default function Hero() {
                 <span aria-hidden="true" key={index} className={`h-2.5 w-2.5 rounded-full ${item}`} />
               ))}
               <span className="ml-auto text-[10px] tracking-widest text-zinc-600">tavabyte — diagnóstico.sh</span>
+              <button
+                type="button"
+                onClick={() => setAnimationRun((current) => current + 1)}
+                className="ml-2 rounded-sm border border-white/10 px-2 py-1 text-[9px] uppercase tracking-wider text-zinc-500 transition-colors hover:border-yellow-400/30 hover:text-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+                aria-label="Rever animação do diagnóstico"
+              >
+                Rever ↻
+              </button>
             </div>
 
             <div className="space-y-0.5 p-5 font-mono text-[0.75rem] leading-[2]" aria-live="polite">
@@ -125,13 +174,24 @@ export default function Hero() {
                   className={`flex gap-3 transition-opacity duration-300 ${visible.includes(index) ? "opacity-100" : "opacity-0"} ${color(line.type)}`}
                 >
                   {line.type === "cmd" ? <span aria-hidden="true" className="select-none text-yellow-400">$</span> : <span aria-hidden="true" className="select-none pl-4 text-zinc-700"> </span>}
-                  <span>{line.text}</span>
+                  <span>
+                    {typedLines[index]}
+                    {visible.includes(index) &&
+                      typedLines[index].length < line.text.length && (
+                        <span
+                          aria-hidden="true"
+                          className="ml-0.5 inline-block h-3 w-1.5 animate-pulse bg-current align-middle"
+                        />
+                      )}
+                  </span>
                 </div>
               ))}
-              <div aria-hidden="true" className="mt-1 flex gap-3 text-yellow-400">
-                <span className="select-none">$</span>
-                <span className="mt-1 inline-block h-3.5 w-2 animate-pulse bg-yellow-400" />
-              </div>
+              {typedLines.at(-1) === terminal.at(-1)?.text && (
+                <div aria-hidden="true" className="mt-1 flex gap-3 text-yellow-400">
+                  <span className="select-none">$</span>
+                  <span className="mt-1 inline-block h-3.5 w-2 animate-pulse bg-yellow-400" />
+                </div>
+              )}
 
               <div className="mt-4 flex flex-wrap gap-1.5 border-t border-white/5 pt-4">
                 {["Diagnóstico", "Otimização", "Formatação", "Suporte remoto", "Upgrade"].map((badge, index) => (
